@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="dffleh — розробник мобільних додатків для Android. Minecraft mods, maps, games та інші застосунки." />
+  <title>dffleh — Mobile App Developer</title>
+  <link rel="icon" href="assets/minecraft-mods-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --bg-card: #121a2b;
+      --bg-card-hover: #182238;
+      --text: #e8eef9;
+      --muted: #94a3b8;
+      --accent: #5cb3ff;
+      --accent-2: #7c5cff;
+      --green: #4ade80;
+      --orange: #fb923c;
+      --border: rgba(148, 163, 184, 0.18);
+      --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(92, 179, 255, 0.18), transparent 35%),
+        radial-gradient(circle at 85% 10%, rgba(124, 92, 255, 0.16), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(74, 222, 128, 0.08), transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .pixel-strip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        #4ade80 0 24px,
+        #5cb3ff 24px 48px,
+        #fb923c 48px 72px,
+        #7c5cff 72px 96px
+      );
+      z-index: 10;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 20px 64px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .logo-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: grid;
+      place-items: center;
+      font-size: 1.2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(92, 179, 255, 0.12);
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      border: 1px solid rgba(92, 179, 255, 0.25);
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    h1 span {
+      background: linear-gradient(90deg, var(--accent), var(--green));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 52ch;
+      margin-bottom: 24px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: transform 0.15s, background 0.2s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), #3b82f6);
+      color: #04101f;
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 280px;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(160deg, rgba(92, 179, 255, 0.15), rgba(124, 92, 255, 0.08)),
+        var(--bg-card);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .floating-card {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(11, 18, 32, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .floating-card strong { color: var(--text); }
+
+    section { margin-bottom: 56px; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      font-size: 1.6rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 36ch;
+      text-align: right;
+    }
+
+    @media (max-width: 640px) {
+      .section-head { flex-direction: column; align-items: start; }
+      .section-head p { text-align: left; }
+    }
+
+    .apps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .app-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: background 0.2s, transform 0.15s;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    .app-card:hover {
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+    }
+
+    .app-top {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .app-icon-placeholder {
+      display: grid;
+      place-items: center;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #fb923c, #ef4444);
+    }
+
+    .app-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .app-tag {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .app-desc {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 16px;
+    }
+
+    .app-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .app-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .app-link:hover { text-decoration: underline; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+    }
+
+    .about-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .about-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+    }
+
+    .about-card p {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .ads-box {
+      background: linear-gradient(135deg, rgba(92, 179, 255, 0.08), rgba(124, 92, 255, 0.08));
+      border: 1px dashed rgba(92, 179, 255, 0.35);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .ads-box h3 {
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ads-box p {
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-bottom: 12px;
+    }
+
+    .ads-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .ads-box a {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .ads-box a:hover { text-decoration: underline; }
+
+    footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="pixel-strip" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="logo-badge" aria-hidden="true">📱</div>
+        <span>dffleh.dev</span>
+      </div>
+      <nav class="nav-links">
+        <a href="#apps">Додатки</a>
+        <a href="#about">Про мене</a>
+        <a href="#ads">App-ads.txt</a>
+        <a href="https://dffleh.github.io/minecraft-mods-privacy/">Privacy</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Android · React Native · Games</div>
+        <h1>Я розробник.<br /><span>Роблю мобільні додатки.</span></h1>
+        <p>
+          Створюю застосунки для Android: моди та карти для Minecraft,
+          міні-ігри, монетизація через рекламу та зручний UX без реєстрації.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#apps">Дивитись додатки ↓</a>
+          <a class="btn btn-ghost" href="https://github.com/dffleh" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <img src="assets/minecraft-mods-icon.png" alt="Minecraft Mods, Maps & Games — іконка додатку" />
+        <div class="floating-card">
+          <strong>Зараз у роботі:</strong> хаб з модами, картами, скінами та іграми — все в одному додатку.
+        </div>
+      </div>
+    </section>
+
+    <section id="apps">
+      <div class="section-head">
+        <h2>Мої додатки</h2>
+        <p>Android-застосунки, які я розробляю та підтримую в Google Play.</p>
+      </div>
+
+      <div class="apps">
+        <article class="app-card">
+          <div class="app-top">
+            <img class="app-icon" src="assets/minecraft-mods-icon.png" alt="" />
+            <div>
+              <div class="app-title">Minecraft Mods, Maps & Games</div>
+              <div class="app-tag">com.dffleh.reactNativeMincraft</div>
+            </div>
+          </div>
+          <p class="app-desc">
+            Хаб для Minecraft: моди, карти, скіни, гайди та міні-ігри.
+            Монети, нагороди, маркетплейс контенту — без акаунта.
+          </p>
+          <div class="app-tags">
+            <span class="tag">Mods</span>
+            <span class="tag">Maps</span>
+            <span class="tag">Mini-games</span>
+            <span class="tag">React Native</span>
+          </div>
+          <a class="app-link" href="https://play.google.com/store/apps/details?id=com.dffleh.reactNativeMincraft" target="_blank" rel="noopener">
+            Відкрити в Google Play →
+          </a>
+        </article>
+
+        <article class="app-card">
+          <div class="app-top">
+            <div class="app-icon app-icon-placeholder" aria-hidden="true">💥</div>
+            <div>
+              <div class="app-title">Addon TNT MOD для Minecraft</div>
+              <div class="app-tag">com.tnt_mods</div>
+            </div>
+          </div>
+          <p class="app-desc">
+            Додаток з TNT-модами та аддонами для Minecraft.
+            Простий доступ до контенту прямо з телефона.
+          </p>
+          <div class="app-tags">
+            <span class="tag">Minecraft</span>
+            <span class="tag">Addons</span>
+            <span class="tag">TNT</span>
+          </div>
+          <a class="app-link" href="https://play.google.com/store/apps/details?id=com.tnt_mods" target="_blank" rel="noopener">
+            Відкрити в Google Play →
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="section-head">
+        <h2>Про мене</h2>
+        <p>Невеликий indie-розробник з фокусом на Android та ігровий контент.</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <h3>🛠 Стек</h3>
+          <p>React Native, Expo, JavaScript, Google AdMob, AsyncStorage, i18n.</p>
+        </div>
+        <div class="about-card">
+          <h3>🎮 Що роблю</h3>
+          <p>Мобільні хаби, маркетплейси контенту, міні-ігри та системи нагород.</p>
+        </div>
+        <div class="about-card">
+          <h3>📬 Контакт</h3>
+          <p>Найшвидше — через сторінку підтримки додатку в Google Play Console.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="ads">
+      <div class="ads-box">
+        <h3>📄 App-ads.txt (AdMob)</h3>
+        <p>
+          Файл для верифікації рекламного інвентарю Google AdMob.
+          Розміщений у корені цього домену згідно вимог Google.
+        </p>
+        <div class="ads-code">google.com, pub-1728967763465520, DIRECT, f08c47fec0942fa0</div>
+        <a href="/app-ads.txt">Відкрити app-ads.txt →</a>
+      </div>
+    </section>
+
+    <footer>
+      <span>© 2026 dffleh · Mobile App Developer</span>
+      <span>
+        <a href="/app-ads.txt">app-ads.txt</a>
+        ·
+        <a href="https://dffleh.github.io/minecraft-mods-privacy/">Privacy Policy</a>
+        ·
+        <a href="https://github.com/dffleh/dffleh.github.io">Source</a>
+      </span>
+    </footer>
+  </div>
+</body>
+</html>
